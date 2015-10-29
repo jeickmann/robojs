@@ -6,6 +6,16 @@ var Rect = function(x,y,width,height) {
 }
 
 Rect.prototype = {
+    getCornerVectors: function() {
+        var result = [
+            new Vector(this.x, this.y),
+            new Vector(this.x, this.y+this.height),
+            new Vector(this.x+this.width, this.y+this.height),
+            new Vector(this.x+this.width, this.y)
+        ];
+        
+        return result;
+    },
     isInside: function(x,y) {
         return (
             x >= this.x &&
@@ -18,7 +28,6 @@ Rect.prototype = {
                 this.isInside(rect.x + rect.width-1, rect.y + rect.height - 1));
     },
     overlaps: function(rect) {
-        //return !(this.x + this.width < rect.x || this.y + this.height < rect.y || this.x > rect.x + rect.width || this.y > rect.y + rect.height);
         return (this.x < rect.x+rect.width && this.x+this.width > rect.x && 
                 this.y < rect.y + rect.height && this.y+this.height > rect.y);
     }
@@ -35,13 +44,25 @@ Vector.prototype = {
     },
     getLength: function() {
         return Math.sqrt(this.x*this.x+this.y*this.y);
-    }/*,
-    
-    angleTo: function(v2) {
-        var crossZ = this.x * v2.y - this.y * v2.x;
+    },
+    subtract: function(vector) {
+        this.x-=vector.x;
+        this.y-=vector.y;
         
-        return Math.asin(crossZ/(this.getLength() * v2.getLength());
-    }*/
+        return this;
+    },    
+    angleTo: function(v2) {
+        var tmp = new Vector(v2.x, v2.y);
+        tmp.subtract(this);
+        return tmp.getAngle();
+        
+    },
+    distanceTo: function(v2) {
+        var tmp = new Vector(v2.x, v2.y);
+        tmp.subtract(this);
+        
+        return tmp.getLength();
+    }
 }
 
 function degrees2radions(degrees) {
@@ -67,7 +88,47 @@ function normalizeAngle(angle) {
     
     return angle;
 }
-        
-function vectorFromAngle(angle) {
+
+//normalize angle to [0,2*PI]
+function normalizeDiffAngle(angle) {
+    while(angle < -Math.PI) {
+        angle+= Math.PI * 2;
+    }
+    while(angle > Math.PI) {
+        angle-= Math.PI * 2;
+    }
     
+    return angle;
+}
+
+function getRotation(fromAngle, toAngle) {
+    return normalizeDiffAngle(toAngle - fromAngle);
+
+}
+
+//returns -1 for counterClockwise, 1 for Clockwise, 0 for no rotation
+function getRotationDir(fromAngle, toAngle) {
+    return Math.sign(getRotation(fromAngle, toAngle));
+}
+        
+
+function getUrlParam(parameterName) {
+    var queryString = window.top.location.search.substring(1);
+  var parameterName = parameterName + "=";
+  if ( queryString.length > 0 ) {
+    begin = queryString.indexOf ( parameterName );
+    if ( begin != -1 ) {
+      begin += parameterName.length;
+      end = queryString.indexOf ( "&" , begin );
+        if ( end == -1 ) {
+        end = queryString.length
+      }
+      return unescape ( queryString.substring ( begin, end ) );
+    }
+  }
+  return null;
+}
+
+function getRandom(min, max) {
+    return Math.random() * (max-min) + min;   
 }

@@ -13,7 +13,7 @@ CONSTANTS = {
     radarOffsetY: 8,
     gunCoolingRate: 0.1,
     maxFiringPower: 3,
-    initialPower: 10
+    initialPower: 100
 };
 
 ROBOT_DEFAULTS = {
@@ -58,8 +58,8 @@ RobotHandler = function(duel, robotFile) {
         this.data = {
             power: CONSTANTS.initialPower,
             gunHeat: 0,
-            x: duel.width/2,
-            y: duel.height/2,
+            x: -1,
+            y: -1,
             angle: 0,
             gunAngle: 0,
             radarAngle: 0
@@ -106,6 +106,7 @@ RobotHandler.prototype = {
         
                 this.duel.bullets.push(new Bullet(this, bulletPower));
                 this.data.gunHeat += 1 + bulletPower / 5;
+                this.data.power -= this.firingRequested;
             }
             this.firingRequested = 0;
         }
@@ -246,27 +247,59 @@ RobotHandler.prototype = {
     scan: function() {
         this.duel.robots.forEach(function(robot) {
             if(robot != this) {
-                var deltaX = robot.data.x - this.data.x;
-                var deltaY = robot.data.y - this.data.y;
-
-                var directionVector = new Vector(deltaX, deltaY);
-                var directionAngle = directionVector.getAngle();
-                var scanned = false;
-                //did we rotate left
-                if(this.oldRadarAngle > this.data.radarAngle) {
-                    console.log(this.data.radarAngle);
-                    scanned = (directionAngle <= this.oldRadarAngle && directionAngle >= this.data.radarAngle);
-                } else {
-                    scanned = (directionAngle >= this.oldRadarAngle && directionAngle <= this.data.radarAngle);
+                //turning left -> diffAngle < 0, turning right -> diffAngle > 0
+                var radarRotation = getRotationDir(this.oldRadarAngle, this.data.radarAngle);
+                
+                var targetVectors = robot.getBoundingBox().getCornerVectors();
+                var myPosition = new Vector(this.data.x, this.data.y);
+                
+                var cornerToTheFront = false;
+                var cornerToTheBack = false;
+                var cornerInside = false;
+                var inFront = false;
+               
+                targetVectors.forEach(function(vector) {
+                    vector.subtract(myPosition);
+                    var directionAngle = vector.getAngle();
+                    var cornerRotationNow = getRotationDir(this.data.radarAngle, directionAngle);
+                    var cornerRotationFormer = getRotationDir(this.oldRadarAngle, directionAngle);
+                    
+                    //Test if the robot is at least "in front of the radar"
+                    if(Math.abs(getRotation(this.data.radarAngle, directionAngle)) < Math.PI/2) {
+                        inFront = true;
+                    }
+                    
+                    if(radarRotation < 0) {//we are turning left
+                        if(cornerRotationNow < 0) {
+                            cornerToTheFront = true;
+                        } else if(cornerRotationFormer > 0) {
+                            cornerToTheBack = true;
+                        } else {
+                            cornerInside = true;   
+                        }
+                    } else {
+                        if(cornerRotationNow > 0) {
+                            cornerToTheFront = true;
+                        } else if(cornerRotationFormer < 0) {
+                            cornerToTheBack = true;
+                        } else {
+                            cornerInside = true;   
+                        }
+                    }
+                }, this);
+                
+                //either corners to front and back or no corners outside of "cone"
+                if(inFront && (cornerInside || cornerToTheFront == cornerToTheBack)) {
+                    //we scanned
+                    this.scannedRobot(robot);
                 }
                 
-                if(scanned) {
-                    console.log(this.name + " scanned " + robot.name );
-                }
-                
+                                
                 //console.log("From " + this.name + " to " + robot.name + "(" + deltaX + "," + deltaY + "): " + directionAngle);
+                
             }
         }, this);
+        
     },
     undoMovement: function() {
         this.data.x -= Math.sin(this.data.angle) * this.velocity;
@@ -286,6 +319,9 @@ RobotHandler.prototype = {
 
         return this._boundingBox;
     },
+    getPosition: function() {
+        return new Vector(this.data.x, this.data.y);   
+    },
     hitByBullet: function(bullet) {
         var damage = 4 * bullet.power;
         if(bullet.power > 1) {
@@ -300,6 +336,18 @@ RobotHandler.prototype = {
             velocity: bullet.velocity
         }
         
+        this.thread.postMessage(message);
+    },
+    scannedRobot: function(robot) {
+        var message = {
+            _cmd: 'SCANNED_ROBOT',
+            direction: this.getPosition().angleTo(robot.getPosition()),
+            distance: this.getPosition().distanceTo(robot.getPosition()),
+            power: robot.data.power,
+            heading: robot.data.angle,
+            name: robot.name,
+            velocity: robot.velocity
+        }
         this.thread.postMessage(message);
     },
     die: function() {
@@ -332,28 +380,28 @@ RobotHandler.prototype = {
             case 'READY':
                 this.name = data.name;
                 this.isReady = true;
-                console.log(this.name + " reports ready!");
+                //console.log(this.name + " reports ready!");
                 this.duel.checkReady();
                 break;
 
             case 'MOVE':
                 this.distanceLeft = data.distance;
-                console.log("Trying to move " + data.distance);
+                //console.log(robot"Trying to move " + data.distance);
                 break;
 
             case 'TURN':
                 this.rotationLeft = data.angle;
-                console.log("Trying to rotate " + data.angle);
+                //console.log("Trying to rotate " + data.angle);
                 break;
 
             case 'TURN_GUN':
                 this.gunRotationLeft = data.angle;
-                console.log("Trying to rotate gun " + data.angle);
+                //console.log("Trying to rotate gun " + data.angle);
                 break;
                 
             case 'TURN_RADAR':
                 this.radarRotationLeft = data.angle;
-                console.log("Trying to rotate radar " + data.angle);
+                //console.log("Trying to rotate radar " + data.angle);
                 break;
                 
             case 'FIRE':

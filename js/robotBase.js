@@ -10,12 +10,16 @@ RobotBase = {
     angle:0,
     gunAngle:0,
     radarAngle:0,
+    arenaWidth: 0,
+    arenaHeight: 0,
     
     startRound: function() { },
     run: function() { },
     onHitWall: function() { },
-    onHitByBullet: function(direction, power, velocity) { console.log('OUCH');},
-    onDeath: function() {console.log('ARGHHH');},
+    onHitByBullet: function(direction, power, velocity) { },
+    onScannedRobot: function(name, direction, distance, heading, velocity, power) {},
+    onDeath: function() { },
+    onWin: function() {},
     
     turnRight: function(radians) {
         this.sendMessage('TURN', {angle: radians});
@@ -80,8 +84,16 @@ RobotBase = {
                 this.onHitByBullet(msg.direction, msg.power, msg.velocity);
                 break;
                 
+            case 'SCANNED_ROBOT':
+                this.onScannedRobot(msg.name, msg.direction, msg.distance, msg.heading, msg.velocity, msg.power);
+                break;
+                
             case 'DIE':
                 this.onDeath();
+                break;
+                
+            case 'WIN':
+                this.win();
                 break;
                 
             case 'ARENA_INFO':

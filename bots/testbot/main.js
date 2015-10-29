@@ -1,4 +1,4 @@
-importScripts('robotBase.js');
+importScripts('../../js/robotBase.js');
 
 var started = false;
 var dir = 1;
@@ -13,7 +13,7 @@ Robot.run = function() {
         //this.moveForward(520);
         //this.turnRight(Math.PI);
         //this.turnGunLeft(Math.PI/2);
-        this.turnRadarLeft(Math.PI);
+        
         
     } 
     
@@ -25,6 +25,10 @@ Robot.run = function() {
     dir *-1;
     this.moveForward(520 * dir);
     this.turnRight(Math.PI);
+}
+ 
+Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+    console.log("We " + this.name + " scanned " + name + " at " + (direction*180/Math.PI));
 }
  
 Robot.startRound = function() {

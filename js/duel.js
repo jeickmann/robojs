@@ -73,11 +73,23 @@ Duel.prototype.startRound = function() {
         robot.resetRobot(300 + 100*index+1, this.height/2);
     }, this);
     
-    
-    this.robots[0].data.x = 400;
-    this.robots[0].data.y = 400;
-    this.robots[1].data.x = 600;
-    this.robots[1].data.y = 400;
+    this.robots.forEach(function(robot) {
+        do {
+            var collides = false;
+            robot.data.x = getRandom(CONSTANTS.robotWidth, this.width-CONSTANTS.robotWidth); 
+            robot.data.y = getRandom(CONSTANTS.robotWidth, this.height-CONSTANTS.robotHeight);
+            
+            this.robots.forEach(function(robot2) {
+                if(robot2 != robot && robot2.data.x != -1) {
+                    if(robot.getBoundingBox().contains(robot2.getBoundingBox())) {
+                        collides = true;   
+                    }
+                }
+            }, this);
+        } while(collides);
+                
+        robot.angle = getRandom(0, Math.PI*2);
+    }, this);
     
     this.explosions = [];
     this.bullets = [];
@@ -201,11 +213,21 @@ Duel.prototype.draw = function(time) {
     var ctx = c.getContext("2d");
     ctx.fillStyle = "#cccccc";
     ctx.fillRect(0,0,this.width, this.height);
-    var tankImg = document.getElementById("tank");
-    var gunImg = document.getElementById("gun");
-    var radarImg = document.getElementById("radar");
+    var tankImg = [
+            document.getElementById("tank0"),
+            document.getElementById("tank1")
+        ];
+        
+    var gunImg = [
+            document.getElementById("gun0"),
+            document.getElementById("gun1")
+        ];
+    var radarImg = [
+        document.getElementById("radar0"),
+        document.getElementById("radar1")
+        ];
     
-    this.robots.forEach(function(robot) {
+    this.robots.forEach(function(robot, index) {
         if(robot.alive) {
             ctx.save();
 
@@ -214,7 +236,7 @@ Duel.prototype.draw = function(time) {
             ctx.save();
                 ctx.rotate(robot.data.angle);
                 ctx.drawImage(
-                    tankImg, 
+                    tankImg[index], 
                     -CONSTANTS.robotWidth/2,
                     -CONSTANTS.robotHeight/2);
             ctx.restore();
@@ -222,7 +244,7 @@ Duel.prototype.draw = function(time) {
             ctx.save();
                 ctx.rotate(robot.data.gunAngle);
                 ctx.drawImage(
-                    gunImg, 
+                    gunImg[index], 
                     -CONSTANTS.gunOffsetX,
                     -CONSTANTS.gunOffsetY);
             ctx.restore();
@@ -230,7 +252,7 @@ Duel.prototype.draw = function(time) {
             ctx.save();
                 ctx.rotate(robot.data.radarAngle);
                 ctx.drawImage(
-                    radarImg, 
+                    radarImg[index], 
                     -CONSTANTS.radarOffsetX,
                     -CONSTANTS.radarOffsetY);
             ctx.restore();
