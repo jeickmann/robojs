@@ -7,7 +7,9 @@ Robot.name = 'Testbot I';
 
 Robot.run = function() {
     //keep it spinning
-    this.turnRadarRight(100);
+    
+        this.turnRadarRight(1000);   
+    
     //this.fire(3);
 };
 
@@ -19,6 +21,12 @@ Robot.run = function() {
 }
  
 Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+    /*
+    this.enemyDetected = true;
+    //turn radar fully towards enemy
+    var radarTurn = normalizeDiffAngle(direction - this.radarAngle);
+    this.turnRadarRight(radarTurn);
+    */
     //turn gun towards enemy
     var gunTurn = normalizeDiffAngle(direction - this.gunAngle);
     this.turnGunRight(gunTurn);
@@ -31,6 +39,7 @@ Robot.startRound = function() {
     console.log('NEW ROUND');
     started = false;
     dir = 1;
+    this.enemyDetected = false;
 }
 
 Robot.ready();

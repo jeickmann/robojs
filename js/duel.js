@@ -211,8 +211,25 @@ Duel.prototype.draw = function(time) {
     
     var c = document.getElementById("arena");
     var ctx = c.getContext("2d");
-    ctx.fillStyle = "#cccccc";
-    ctx.fillRect(0,0,this.width, this.height);
+    
+    var bgImage = document.getElementById('background');
+    
+    var x = 0;
+    
+    while(x < this.width) {
+        var y = 0;
+        while(y < this.height) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.drawImage(
+                    bgImage, 
+                    0,
+                    0);
+            y += bgImage.height;
+            ctx.restore();
+        }
+        x += bgImage.width;
+    }
     var tankImg = [
             document.getElementById("tank0"),
             document.getElementById("tank1")
