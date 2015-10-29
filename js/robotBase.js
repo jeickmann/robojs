@@ -93,7 +93,7 @@ RobotBase = {
                 break;
                 
             case 'WIN':
-                this.win();
+                this.onWin();
                 break;
                 
             case 'ARENA_INFO':

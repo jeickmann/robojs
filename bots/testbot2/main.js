@@ -1,17 +1,15 @@
 importScripts('../../js/robotBase.js');
+importScripts('../../js/utils.js');
 
 var started = false;
 
 Robot = RobotBase;
 
-Robot.name = 'Bot2 (unten)';
+Robot.name = 'Testbot II';
 
 Robot.run = function() {
-    if(!started) {
-        started = true;
-        //this.moveForward(200);
-        this.turnRadarLeft(Math.PI*1.4);
-    }
+    this.moveForward(200);
+    this.turnRight(10);
 };
  
 Robot.startRound = function() {
@@ -19,7 +17,7 @@ Robot.startRound = function() {
 }
 
 Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
-    console.log("We " + this.name + " scanned " + name + " at " + (direction*180/Math.PI));
+    
 }
 
 Robot.ready();

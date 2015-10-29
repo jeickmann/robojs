@@ -21,11 +21,11 @@ for(var i=6;i>=1;i--) {
     ANIMATIONS.bulletExplosion.frames.push(document.getElementById('explosion2-'+i));
 }
 
-var Duel = function(robot1File, robot2File, rounds) {
+var Duel = function(robot1File, robot2File, rounds, speed) {
     this.width = 800;
     this.height = 600;
     this.boundingBox = new Rect(0,0,this.width, this.height);
-    this.ticksPerSecond = 1;
+    this.ticksPerSecond = speed;
     this.rounds = rounds;
     this.currentRound = 0;
     this.message = '';
@@ -158,7 +158,7 @@ Duel.prototype.bulletHitWall = function(bullet) {
 Duel.prototype.bulletHitRobot = function(bullet, robot) {
     this.explosions.push(new Animation(bullet.x, bullet.y, ANIMATIONS.bulletExplosion.frames, ANIMATIONS.bulletExplosion.duration));
     
-    bullet.robot.power += 3 * bullet.power;
+    bullet.robot.data.power += 3 * bullet.power;
     
     robot.hitByBullet(bullet);
     
