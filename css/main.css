@@ -1,0 +1,26 @@
+.assets {
+    display: none;   
+}
+
+canvas {
+    float: left;   
+    margin: 10px;
+}
+
+dt {
+    float:left;
+    width: 100px;
+}
+
+#message {
+    position: absolute;
+    top: 100px;
+    left: 10px;
+    width: 800px;
+    z-index:100;
+    text-align:center;
+    font-family: Arial sans-serif;
+    font-size: 30px;
+    font-weight:bold;
+    color: red;
+}

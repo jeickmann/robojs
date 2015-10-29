@@ -1,0 +1,130 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoboJS</title>
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body>
+      <canvas id="arena" width="800" height="600" style="border:1px solid #000000;">
+</canvas>
+      <span id="message"></span>
+      <div class="robot-stats">
+          <h2 id="r1_name">Loading...</h2>
+          <dl>
+            <dt>Power</dt>
+            <dd id="r1_power"></dd>
+            <dt>Wins</dt>
+            <dd id="r1_wins"></dd>
+          </dl>
+          <h2 id="r2_name">Loading...</h2>
+          <dl>
+            <dt>Power</dt>
+            <dd id="r2_power"></dd>
+            <dt>Wins</dt>
+            <dd id="r2_wins"></dd>
+          </dl>
+        <dd></dd>
+      </div>
+      <div class="assets">
+        <img id="tank" src="images/body.png">
+        <img id="gun" src="images/turret.png">
+        <img id="radar" src="images/radar.png">
+        <img id="explosion1-1" src="images/explosion/explosion1-1.png">
+        <img id="explosion1-2" src="images/explosion/explosion1-2.png">
+        <img id="explosion1-3" src="images/explosion/explosion1-3.png">
+        <img id="explosion1-4" src="images/explosion/explosion1-4.png">
+        <img id="explosion1-5" src="images/explosion/explosion1-5.png">
+        <img id="explosion1-6" src="images/explosion/explosion1-6.png">
+        <img id="explosion1-7" src="images/explosion/explosion1-7.png">
+        <img id="explosion1-8" src="images/explosion/explosion1-8.png">
+        <img id="explosion1-9" src="images/explosion/explosion1-9.png">
+        <img id="explosion1-10" src="images/explosion/explosion1-10.png">
+        <img id="explosion1-11" src="images/explosion/explosion1-11.png">
+        <img id="explosion1-12" src="images/explosion/explosion1-12.png">
+        <img id="explosion1-13" src="images/explosion/explosion1-13.png">
+        <img id="explosion1-14" src="images/explosion/explosion1-14.png">
+        <img id="explosion1-15" src="images/explosion/explosion1-15.png">
+        <img id="explosion1-16" src="images/explosion/explosion1-16.png">
+        <img id="explosion1-17" src="images/explosion/explosion1-17.png">
+
+        <img id="explosion2-1" src="images/explosion/explosion2-1.png">
+        <img id="explosion2-1" src="images/explosion/explosion2-1.png">
+        <img id="explosion2-2" src="images/explosion/explosion2-2.png">
+        <img id="explosion2-3" src="images/explosion/explosion2-3.png">
+        <img id="explosion2-4" src="images/explosion/explosion2-4.png">
+        <img id="explosion2-5" src="images/explosion/explosion2-5.png">
+        <img id="explosion2-6" src="images/explosion/explosion2-6.png">
+        <img id="explosion2-7" src="images/explosion/explosion2-7.png">
+        <img id="explosion2-8" src="images/explosion/explosion2-8.png">
+        <img id="explosion2-9" src="images/explosion/explosion2-9.png">
+        <img id="explosion2-10" src="images/explosion/explosion2-10.png">
+        <img id="explosion2-11" src="images/explosion/explosion2-11.png">
+        <img id="explosion2-12" src="images/explosion/explosion2-12.png">
+        <img id="explosion2-13" src="images/explosion/explosion2-13.png">
+        <img id="explosion2-14" src="images/explosion/explosion2-14.png">
+        <img id="explosion2-15" src="images/explosion/explosion2-15.png">
+        <img id="explosion2-16" src="images/explosion/explosion2-16.png">
+        <img id="explosion2-17" src="images/explosion/explosion2-17.png">
+        <img id="explosion2-18" src="images/explosion/explosion2-18.png">
+        <img id="explosion2-19" src="images/explosion/explosion2-19.png">
+        <img id="explosion2-20" src="images/explosion/explosion2-20.png">
+        <img id="explosion2-21" src="images/explosion/explosion2-21.png">
+        <img id="explosion2-22" src="images/explosion/explosion2-22.png">
+        <img id="explosion2-23" src="images/explosion/explosion2-23.png">
+        <img id="explosion2-24" src="images/explosion/explosion2-24.png">
+        <img id="explosion2-25" src="images/explosion/explosion2-25.png">
+        <img id="explosion2-26" src="images/explosion/explosion2-26.png">
+        <img id="explosion2-27" src="images/explosion/explosion2-27.png">
+        <img id="explosion2-28" src="images/explosion/explosion2-28.png">
+        <img id="explosion2-29" src="images/explosion/explosion2-29.png">
+        <img id="explosion2-30" src="images/explosion/explosion2-30.png">
+        <img id="explosion2-31" src="images/explosion/explosion2-31.png">
+        <img id="explosion2-32" src="images/explosion/explosion2-32.png">
+        <img id="explosion2-33" src="images/explosion/explosion2-33.png">
+        <img id="explosion2-34" src="images/explosion/explosion2-34.png">
+        <img id="explosion2-35" src="images/explosion/explosion2-35.png">
+        <img id="explosion2-36" src="images/explosion/explosion2-36.png">
+        <img id="explosion2-37" src="images/explosion/explosion2-37.png">
+        <img id="explosion2-38" src="images/explosion/explosion2-38.png">
+        <img id="explosion2-39" src="images/explosion/explosion2-39.png">
+        <img id="explosion2-40" src="images/explosion/explosion2-40.png">
+        <img id="explosion2-41" src="images/explosion/explosion2-41.png">
+        <img id="explosion2-42" src="images/explosion/explosion2-42.png">
+        <img id="explosion2-43" src="images/explosion/explosion2-43.png">
+        <img id="explosion2-44" src="images/explosion/explosion2-44.png">
+        <img id="explosion2-45" src="images/explosion/explosion2-45.png">
+        <img id="explosion2-46" src="images/explosion/explosion2-46.png">
+        <img id="explosion2-47" src="images/explosion/explosion2-47.png">
+        <img id="explosion2-48" src="images/explosion/explosion2-48.png">
+        <img id="explosion2-49" src="images/explosion/explosion2-49.png">
+        <img id="explosion2-50" src="images/explosion/explosion2-50.png">
+        <img id="explosion2-51" src="images/explosion/explosion2-51.png">
+        <img id="explosion2-52" src="images/explosion/explosion2-52.png">
+        <img id="explosion2-53" src="images/explosion/explosion2-53.png">
+        <img id="explosion2-54" src="images/explosion/explosion2-54.png">
+        <img id="explosion2-55" src="images/explosion/explosion2-55.png">
+        <img id="explosion2-56" src="images/explosion/explosion2-56.png">
+        <img id="explosion2-57" src="images/explosion/explosion2-57.png">
+        <img id="explosion2-58" src="images/explosion/explosion2-58.png">
+        <img id="explosion2-59" src="images/explosion/explosion2-59.png">
+        <img id="explosion2-60" src="images/explosion/explosion2-60.png">
+        <img id="explosion2-61" src="images/explosion/explosion2-61.png">
+        <img id="explosion2-62" src="images/explosion/explosion2-62.png">
+        <img id="explosion2-63" src="images/explosion/explosion2-63.png">
+        <img id="explosion2-64" src="images/explosion/explosion2-64.png">
+        <img id="explosion2-65" src="images/explosion/explosion2-65.png">
+        <img id="explosion2-66" src="images/explosion/explosion2-66.png">
+        <img id="explosion2-67" src="images/explosion/explosion2-67.png">
+        <img id="explosion2-68" src="images/explosion/explosion2-68.png">
+        <img id="explosion2-69" src="images/explosion/explosion2-69.png">
+        <img id="explosion2-70" src="images/explosion/explosion2-70.png">
+        <img id="explosion2-71" src="images/explosion/explosion2-71.png">
+    </div>
+      <script src="js/utils.js"></script>
+      <script src="js/robotHandler.js"></script>
+      <script src="js/duel.js"></script>
+      <script src="js/main.js"></script>
+  </body>
+</html>
