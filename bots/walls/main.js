@@ -15,28 +15,18 @@ STATE_MOVING_SOUTH = 1;
 STATE_MOVING_WEST = 2;
 STATE_MOVING_NORTH = 3;
 
-WALL_DISTANCE = 100;
+WALL_DISTANCE = 50;
 
 //called at the start of each round
 Robot.startRound = function() {
     this.state = STATE_MOVING_NORTH;
     this.enemyDetected = -100;
+    this.turnGunRight(Math.PI/2);
 },
 
 //called every game tick
 Robot.run = function() { 
-    if(this.tickCount - this.enemyDetected > 10) {
-        this.turnRadarLeft(1000);
-    } else {
-        var radarTurn = normalizeDiffAngle(this.enemyDirection - this.radarAngle);
-        this.turnRadarRight(radarTurn);
-        
-        var gunTurn = normalizeDiffAngle(this.enemyDirection - this.gunAngle);
-        this.turnGunRight(gunTurn);
-        if(gunTurn < 0.1) {
-            this.fire(3);   
-        }
-    }
+
     if(Math.abs(this.rotationLeft) < 0.01) {
         switch(this.state) {
             case STATE_MOVING_NORTH:
@@ -93,8 +83,7 @@ Robot.onHitByBullet = function(direction, power, velocity) { },
     
 //a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
 Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
-    this.enemyDetected = this.tickCount;
-    this.enemyDirection = direction;
+    this.fire(3);
 },
     
 //this robot died

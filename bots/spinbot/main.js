@@ -5,12 +5,11 @@ var started = false;
 
 Robot = RobotBase;
 
-Robot.name = 'Testbot II';
+Robot.name = 'SpinBot';
 
 Robot.run = function() {
-    this.moveForward(200);
     this.turnRight(10);
-    
+    this.moveForward(25);
 };
  
 Robot.startRound = function() {
@@ -18,7 +17,7 @@ Robot.startRound = function() {
 }
 
 Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
-    
+    this.fire(3);
 }
 
 Robot.ready();
