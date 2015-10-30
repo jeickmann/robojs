@@ -1,5 +1,6 @@
 CONSTANTS = {
     robotAcceleration: 1,
+    robotDecceleration: 2,
     robotMaxSpeed: 8,
     rotateSpeed: 1,
     rotateGunSpeed: 20/180*Math.PI,
@@ -151,7 +152,7 @@ RobotHandler.prototype = {
             } else {
                 //how far do we move if we brake in the next round (braking applies before movement, so if we actually break now, we move one step less
                 var minDistanceTravelled = 0;
-                for(var tempV=Math.abs(this.velocity);tempV>0;tempV-=CONSTANTS.robotAcceleration) {
+                for(var tempV=Math.abs(this.velocity);tempV>0;tempV-=CONSTANTS.robotDecceleration) {
                     minDistanceTravelled += tempV;
                 }
 
@@ -174,7 +175,7 @@ RobotHandler.prototype = {
             //limit to Max Velocity
             this.velocity = clamp(this.velocity, -CONSTANTS.robotMaxSpeed, CONSTANTS.robotMaxSpeed);
         } else if(brake) {
-            this.velocity -= CONSTANTS.robotAcceleration * directionalSign;
+            this.velocity -= CONSTANTS.robotDecceleration * directionalSign;
         }
 
         //movement
