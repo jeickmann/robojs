@@ -318,7 +318,7 @@ Duel.prototype.draw = function(time) {
         }
     }, this);
     
-    ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#ffffff";
     this.bullets.forEach(function(bullet) {
         var bulletRadius = 1 + (bullet.power);
         ctx.beginPath();
