@@ -328,6 +328,9 @@ Duel.prototype.draw = function(time) {
     
     document.getElementById('message').innerHTML = this.message;
     
+    
+    document.getElementById('title').innerText = this.robots[0].name + " vs. " + this.robots[1].name;
+    
     this.updateRobotStats(this.robots[0], 'r1_');
     this.updateRobotStats(this.robots[1], 'r2_');
 }

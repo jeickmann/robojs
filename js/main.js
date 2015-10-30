@@ -14,10 +14,12 @@ if(!rounds) {
 }
 
 if(!speed) {
-    speed = 15;   
+    speed = 20;   
 }
 
 rounds = parseInt(rounds);
-    
-duel = new Duel('bots/'+bot1+'/main.js', 'bots/'+bot2+'/main.js', rounds, speed);
+var bot1File = (bot1.startsWith('/')?'':'bots/') + bot1 + '/main.js';
+var bot2File = (bot2.startsWith('/')?'':'bots/') + bot2 + '/main.js';
+console.log(bot1File);
+duel = new Duel(bot1File, bot2File, rounds, speed);
 duel.start();
