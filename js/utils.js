@@ -110,6 +110,10 @@ function getRotation(fromAngle, toAngle) {
 function getRotationDir(fromAngle, toAngle) {
     return Math.sign(getRotation(fromAngle, toAngle));
 }
+
+function isNear(value, value2) {
+    return Math.abs(value-value2) < 0.001;
+}
         
 
 function getUrlParam(parameterName) {

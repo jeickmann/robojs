@@ -108,30 +108,57 @@ Duel.prototype.run = function() {
         return;
     }
     
-    var tickTime = 1000/this.ticksPerSecond;
     //this.draw();
-    this.update();
     
-    var duel = this;
-    window.setTimeout(function() {
-        duel.run();   
-    }, tickTime);
+    this.updateBulletsAndTick();
+    this.initiateSync();
+    
 }
 
-Duel.prototype.update = function() {
+Duel.prototype.initiateSync = function() {
+    this.robots.forEach(function(robot) {
+        robot.synched = false;
+    });
+    
+    this.robots.forEach(function(robot) {
+        if(robot.alive)
+            robot.requestSync();
+    });
+};
+
+Duel.prototype.robotSynched = function() {
+    var allSynced = true;
+    this.robots.forEach(function(robot) {
+         if(robot.alive && !robot.synched) {
+             allSynced = false;
+         }
+    });
+    
+    if(allSynced) {
+        duel.updateBotsAndScan();   
+    }
+}
+
+Duel.prototype.updateBulletsAndTick = function() {
     this.bullets.forEach(function(bullet) {
         bullet.advance();
     });
     
     this.robots.forEach(function(robot) {
+        robot.tick();
+    });
+}
+
+Duel.prototype.updateBotsAndScan = function() {
+    this.robots.forEach(function(robot) {
         robot.collisions = [];
     });
     
+    
     this.robots.forEach(function(robot) {
-        robot.tick();
         robot.advanceRobot();
     });
-                        
+    
     for(var i=0;i<this.robots.length;i++) {
         for(var j=i+1;j<this.robots.length;j++) {
             this.robots[i].checkCollision(this.robots[j]);   
@@ -139,14 +166,16 @@ Duel.prototype.update = function() {
     }
     
     this.robots.forEach(function(robot) {
-        robot.updateClient();
-    });
-    
-    this.robots.forEach(function(robot) {
         robot.scan();
     });
     
     this.testRoundEnd();
+    
+    var duel = this;
+    var tickTime = 1000/this.ticksPerSecond;
+    window.setTimeout(function() {
+        duel.run();   
+    }, tickTime);
 }
 
 Duel.prototype.bulletHitWall = function(bullet) {
@@ -305,7 +334,7 @@ Duel.prototype.draw = function(time) {
 
 Duel.prototype.updateRobotStats = function(robot, prefix) {
     document.getElementById(prefix + 'name').innerText = robot.name;
-    document.getElementById(prefix + 'power').innerText = robot.data.power;
+    document.getElementById(prefix + 'power').innerText = Math.round(robot.data.power);
     document.getElementById(prefix + 'wins').innerText = robot.wins;
 }
 

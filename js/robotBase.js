@@ -7,11 +7,16 @@ addEventListener('message', function(e) {
 RobotBase = {
     x:0,
     y:0,
+    distanceLeft:0,
     angle:0,
+    rotationLeft:0,
     gunAngle:0,
+    gunRotationLeft:0,
     radarAngle:0,
+    radarRotationLeft:0,
     arenaWidth: 0,
     arenaHeight: 0,
+    tickCount: 0,
     
     startRound: function() { },
     run: function() { },
@@ -23,34 +28,42 @@ RobotBase = {
     
     turnRight: function(radians) {
         this.sendMessage('TURN', {angle: radians});
+        this.rotationLeft = radians;
     },
     
     turnLeft: function(radians) {
         this.sendMessage('TURN', {angle: -radians});
+        this.rotationLeft = -radians;
     },
     
     turnGunRight: function(radians) {
         this.sendMessage('TURN_GUN', {angle: radians});
+        this.gunRotationLeft = radians;
     },
     
     turnGunLeft: function(radians) {
         this.sendMessage('TURN_GUN', {angle: -radians});
+        this.gunRotationLeft = -radians;
     },
     
     turnRadarRight: function(radians) {
         this.sendMessage('TURN_RADAR', {angle: radians});
+        this.radarRotationLeft = radians;
     },
     
     turnRadarLeft: function(radians) {
         this.sendMessage('TURN_RADAR', {angle: -radians});
+        this.radarRotationLeft = -radians;
     },
     
     moveForward: function(distance) {
         this.sendMessage('MOVE', {distance: distance});
+        this.distanceLeft = distance;
     },
     
     moveBack: function(distance) {
         this.sendMessage('MOVE', {distance: -distance});
+        this.distanceLeft = -distance;
     },
     
     fire: function(firingPower) {
@@ -62,18 +75,22 @@ RobotBase = {
     },
     
     receiveMessage: function(msg) {
-        switch(msg._cmd) {
-            case 'UPDATE':
-                this.power = msg.power;
-                this.x = msg.x;
-                this.y = msg.y;
-                this.angle = msg.angle;
-                this.gunAngle = msg.gunAngle;
-                this.radarAngle = msg.radarAngle;
-                break;
-            
+        if(msg.updateInfo != null) {
+            this.power = msg.updateInfo.power;
+            this.x = msg.updateInfo.x;
+            this.y = msg.updateInfo.y;
+            this.angle = msg.updateInfo.angle;
+            this.gunAngle = msg.updateInfo.gunAngle;
+            this.radarAngle = msg.updateInfo.radarAngle;
+            this.distanceLeft = msg.updateInfo.distanceLeft;
+            this.rotationLeft = msg.updateInfo.rotationLeft;
+            this.gunRotationLeft = msg.updateInfo.gunRotationLeft;
+            this.radarRotationLeft = msg.updateInforadarRotationLeft;
+        }
+        switch(msg._cmd) {            
             case 'TICK':
                 this.run();
+                this.tickCount++;
                 break;
                 
             case 'HIT_WALL':
@@ -102,7 +119,12 @@ RobotBase = {
                 break;
                 
             case 'NEW_ROUND':
+                this.tickCount = 0;
                 this.startRound();
+                break;
+                
+            case 'SYNC':
+                this.sendMessage('ACK_SYNC', {});
                 break;
         }
     },

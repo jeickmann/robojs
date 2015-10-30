@@ -43,10 +43,6 @@ RobotHandler = function(duel, robotFile) {
         this.name = 'unknown';
         this.isReady = false;
         this.duel = duel;
-        this.distanceLeft = 0;
-        this.rotationLeft = 0;
-        this.gunRotationLeft = 0;
-        this.radarRotationLeft = 0;
         this.oldRadarAngle = 0;
         this.firingRequested = 0;
         this.velocity = 0;
@@ -62,7 +58,11 @@ RobotHandler = function(duel, robotFile) {
             y: -1,
             angle: 0,
             gunAngle: 0,
-            radarAngle: 0
+            radarAngle: 0,
+            distanceLeft: 0,
+            rotationLeft: 0,
+            gunRotationLeft: 0,
+            radarRotationLeft: 0
         };
         this.collisions = [];
 };
@@ -84,8 +84,7 @@ RobotHandler.prototype = {
         this.data.x = x;
         this.data.y = y;
         
-        this.thread.postMessage({_cmd:'NEW_ROUND'});
-        this.updateClient();
+        this.sendMessageToBot({_cmd:'NEW_ROUND'});
     },
     advanceRobot: function() {
         if(!this.alive) {
@@ -113,24 +112,24 @@ RobotHandler.prototype = {
         
         this.oldRadarAngle = this.data.radarAngle;
         //rotation of the radar
-        if(this.radarRotationLeft) {
-            var radarRotation = Math.min(CONSTANTS.rotateRadarSpeed, Math.abs(this.radarRotationLeft)) *  Math.sign(this.radarRotationLeft);
-            this.radarRotationLeft -= radarRotation;
+        if(this.data.radarRotationLeft) {
+            var radarRotation = Math.min(CONSTANTS.rotateRadarSpeed, Math.abs(this.data.radarRotationLeft)) *  Math.sign(this.data.radarRotationLeft);
+            this.data.radarRotationLeft -= radarRotation;
             this.data.radarAngle += radarRotation;            
         }
         
         //rotation of the gun
-        if(this.gunRotationLeft) {
-            var gunRotation = Math.min(CONSTANTS.rotateGunSpeed, Math.abs(this.gunRotationLeft)) *  Math.sign(this.gunRotationLeft);
-            this.gunRotationLeft -= gunRotation;
+        if(this.data.gunRotationLeft) {
+            var gunRotation = Math.min(CONSTANTS.rotateGunSpeed, Math.abs(this.data.gunRotationLeft)) *  Math.sign(this.data.gunRotationLeft);
+            this.data.gunRotationLeft -= gunRotation;
             this.data.gunAngle += gunRotation;   
             this.data.radarAngle += gunRotation;           
         }
 
         //rotation of the robot
-        if(this.rotationLeft) {
-            var rotation = Math.min(degrees2radions(10 - 0.75 * Math.abs(this.velocity)), Math.abs(this.rotationLeft)) *  Math.sign(this.rotationLeft);
-            this.rotationLeft -= rotation;
+        if(this.data.rotationLeft) {
+            var rotation = Math.min(degrees2radions(10 - 0.75 * Math.abs(this.velocity)), Math.abs(this.data.rotationLeft)) *  Math.sign(this.data.rotationLeft);
+            this.data.rotationLeft -= rotation;
             this.data.angle += rotation;
             this.data.gunAngle += rotation;  
             this.data.radarAngle += rotation;             
@@ -147,7 +146,7 @@ RobotHandler.prototype = {
         //no need if we are not moving
         if(this.velocity != 0) {
             //we always brake if we have different signs for velocity and distanceLeft
-            if(Math.sign(this.velocity) != Math.sign(this.distanceLeft)) {
+            if(Math.sign(this.velocity) != Math.sign(this.data.distanceLeft)) {
                 brake = true;
             } else {
                 //how far do we move if we brake in the next round (braking applies before movement, so if we actually break now, we move one step less
@@ -156,19 +155,19 @@ RobotHandler.prototype = {
                     minDistanceTravelled += tempV;
                 }
 
-                if(Math.abs(this.distanceLeft) < minDistanceTravelled) {
+                if(Math.abs(this.data.distanceLeft) < minDistanceTravelled) {
                     brake = true;   
-                } else if (Math.abs(this.distanceLeft) >= minDistanceTravelled + this.velocity + CONSTANTS.robotAcceleration) {
+                } else if (Math.abs(this.data.distanceLeft) >= minDistanceTravelled + this.velocity + CONSTANTS.robotAcceleration) {
                     accelerate = true;
                 }
             }
-        } else if(this.distanceLeft != 0) {
+        } else if(this.data.distanceLeft != 0) {
             accelerate = true;
         }
 
         var directionalSign = Math.sign(this.velocity);
         if(directionalSign == 0) {
-            directionalSign = Math.sign(this.distanceLeft);   
+            directionalSign = Math.sign(this.data.distanceLeft);   
         }
         if(accelerate) {
             this.velocity += CONSTANTS.robotAcceleration * directionalSign;
@@ -181,8 +180,12 @@ RobotHandler.prototype = {
         //movement
         if(this.velocity != 0) {
             this.doMovement();
-
-            this.distanceLeft -= this.velocity;
+            
+            var oldSign = Math.sign(this.data.distanceLeft);
+            this.data.distanceLeft -= this.velocity;
+            if(oldSign != Math.sign(this.data.distanceLeft)) {
+                this.data.distanceLeft = 0;
+            }
 
             //test if we hit a wall, if so, back up until we are free of the wall, then stop and send message
             if(!this.duel.boundingBox.contains(this.getBoundingBox())) {
@@ -193,7 +196,7 @@ RobotHandler.prototype = {
                 this.data.power -= Math.max(Math.abs(this.velocity) * 0.5 - 1, 0);
                 this.stopImmediatly();
                
-                this.thread.postMessage({_cmd:'HIT_WALL'});
+                this.sendMessageToBot({_cmd:'HIT_WALL'});
             }
         }
         
@@ -336,7 +339,7 @@ RobotHandler.prototype = {
             velocity: bullet.velocity
         }
         
-        this.thread.postMessage(message);
+        this.sendMessageToBot(message);
     },
     scannedRobot: function(robot) {
         var message = {
@@ -348,26 +351,32 @@ RobotHandler.prototype = {
             name: robot.name,
             velocity: robot.velocity
         }
-        this.thread.postMessage(message);
+        this.sendMessageToBot(message);
     },
     die: function() {
         this.duel.robotDie(this);
         this.alive = false;
-        this.thread.postMessage({_cmd:'DIE'});
+        this.sendMessageToBot({_cmd:'DIE'});
     },
     win: function() {
         this.wins++;
-        this.thread.postMessage({_cmd:'WIN'});
+        this.sendMessageToBot({_cmd:'WIN'});
     },
     stopImmediatly: function() {
         this.velocity = 0;
-        this.distanceLeft = 0;  
+        this.data.distanceLeft = 0;  
     },
     loadWorker: function() {
         this.thread = new Worker(this.file);
         var robot = this;
         this.thread.addEventListener('message', function(e) {
             robot.messageHandler(e);
+        });
+        
+        this.sendMessageToBot({
+            _cmd:'ARENA_INFO',
+            width: this.duel.width,
+            height: this.duel.height
         });
     },
     messageHandler: function(e) {
@@ -385,39 +394,46 @@ RobotHandler.prototype = {
                 break;
 
             case 'MOVE':
-                this.distanceLeft = data.distance;
+                this.data.distanceLeft = data.distance;
                 //console.log(robot"Trying to move " + data.distance);
                 break;
 
             case 'TURN':
-                this.rotationLeft = data.angle;
+                this.data.rotationLeft = data.angle;
                 //console.log("Trying to rotate " + data.angle);
                 break;
 
             case 'TURN_GUN':
-                this.gunRotationLeft = data.angle;
+                this.data.gunRotationLeft = data.angle;
                 //console.log("Trying to rotate gun " + data.angle);
                 break;
                 
             case 'TURN_RADAR':
-                this.radarRotationLeft = data.angle;
+                this.data.radarRotationLeft = data.angle;
                 //console.log("Trying to rotate radar " + data.angle);
                 break;
                 
             case 'FIRE':
                 this.firingRequested = data.firingPower;
                 break;
+                
+            case 'ACK_SYNC':
+                this.synched = true;
+                this.duel.robotSynched();
         }
     },
     tick: function() {
         if(this.alive) {
-            this.thread.postMessage({_cmd:'TICK'});
+            this.sendMessageToBot({_cmd:'TICK'});
         }
     },
-    updateClient: function() {
-        var params =  JSON.parse(JSON.stringify(this.data));
-        params._cmd = 'UPDATE';
-        this.thread.postMessage(params);
+    
+    requestSync: function() {
+          this.sendMessageToBot({_cmd:'SYNC'});
+    },
+    sendMessageToBot(message) {
+        message.updateInfo = JSON.parse(JSON.stringify(this.data));
+        this.thread.postMessage(message);
     }
 }
 

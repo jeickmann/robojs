@@ -31,7 +31,7 @@ Robot.onScannedRobot = function(name, direction, distance, heading, velocity, po
     var gunTurn = normalizeDiffAngle(direction - this.gunAngle);
     this.turnGunRight(gunTurn);
     if(gunTurn < 0.1) {
-        this.fire(3);   
+        //this.fire(3);   
     }
 }
  
