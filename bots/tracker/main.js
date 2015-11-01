@@ -3,7 +3,7 @@ importScripts('../../js/utils.js');
 
 Robot = RobotBase;
 
-Robot.name = 'Tracker-';
+Robot.name = 'Tracker';
 
 Robot.run = function() {
     
@@ -49,7 +49,6 @@ Robot.onHitByBullet = function(direction, power, velocity) { },
 //a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
 Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
     if(this.state == SCANNING) {
-        console.log(distance);
         if(distance < FIRE_DISTANCE) {
             this.turnGunRight(0);
             this.moveForward(0);

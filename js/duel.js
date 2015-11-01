@@ -29,6 +29,7 @@ var Duel = function(robot1File, robot2File, rounds, speed) {
     this.rounds = rounds;
     this.currentRound = 0;
     this.message = '';
+    this.drawScans = false;
     
     this.robots = [
         new RobotHandler(this, robot1File),
@@ -305,9 +306,30 @@ Duel.prototype.draw = function(time) {
                     -CONSTANTS.radarOffsetY);
             ctx.restore();
 
+            var SCAN_LENGTH = 1200;
+            if(this.drawScans) {
+                ctx.fillStyle= 'rgba(0, 255, 0, 0.3)'
+                ctx.beginPath();
+                
+                ctx.moveTo(0,0);
+                ctx.arc(0, 0, SCAN_LENGTH, normalizeAngle(robot.oldRadarAngle - Math.PI/2), normalizeAngle(robot.data.radarAngle - Math.PI/2), (getRotationDir(robot.oldRadarAngle, robot.data.radarAngle)<0));
+                //ctx.arc(0, 0, 100, 0, Math.PI/2, true);
+               
+                ctx.fill();
+                
+                ctx.strokeStyle = "#00ff00";
+                ctx.beginPath();
+                ctx.moveTo(0,0);
+                var lineTarget = new Vector(0,0);
+                lineTarget.project(robot.data.radarAngle, SCAN_LENGTH);
+                ctx.lineTo(lineTarget.x, lineTarget.y);
+                ctx.stroke();             
+            }
+            
             ctx.restore();
+            
         }
-    });
+    }, this);
     this.explosions.forEach(function(animation) {
         var image = animation.advance(deltaMS);
         if(image != null) {

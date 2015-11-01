@@ -63,6 +63,13 @@ Vector.prototype = {
         
         return tmp.getLength();
     }
+    ,
+    project: function(angle, distance) {
+        this.x += Math.sin(angle) * distance;
+        this.y += -Math.cos(angle) * distance;
+        
+        return this;
+    }
 }
 
 function degrees2radions(degrees) {
