@@ -360,9 +360,9 @@ Duel.prototype.draw = function(time) {
 }
 
 Duel.prototype.updateRobotStats = function(robot, prefix) {
-    document.getElementById(prefix + 'name').innerText = robot.name;
-    document.getElementById(prefix + 'power').innerText = Math.round(robot.data.power);
-    document.getElementById(prefix + 'wins').innerText = robot.wins;
+    document.getElementById(prefix + 'name').textContent = robot.name;
+    document.getElementById(prefix + 'power').textContent = Math.round(robot.data.power);
+    document.getElementById(prefix + 'wins').textContent = robot.wins;
 }
 
 Animation = function(x,y,frames, duration) {
