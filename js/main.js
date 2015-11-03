@@ -23,4 +23,5 @@ var bot2File = (bot2.startsWith('/')?'':'bots/') + bot2 + '/main.js';
 
 duel = new Duel(bot1File, bot2File, rounds, speed);
 duel.drawScans = getUrlParam('drawScans') != null;
+duel.drawDebug = getUrlParam('drawDebug') != null;
 duel.start();

@@ -70,6 +70,22 @@ RobotBase = {
         this.sendMessage('FIRE', {firingPower: firingPower});
     },
     
+    setAdjustGunForRobotTurn: function(adjust) {
+        this.sendMessage('ADJUST_GUN_FOR_ROBOT_TURN', {adjust: adjust});
+    },
+    
+    setAdjustRadarForGunTurn: function(adjust) {
+        this.sendMessage('ADJUST_RADAR_FOR_GUN_TURN', {adjust: adjust});
+    },
+    
+    drawCircle: function(x,y,radius,color) {
+        this.sendMessage('DRAW_CIRCLE', {x:x,y:y,radius:radius,color:color});
+    },
+    
+    drawLine: function(fromX, fromY, toX, toY, color) {
+        this.sendMessage('DRAW_LINE', {fromX:fromX,fromY:fromY,toX:toX, toY:toY,color:color});
+    },
+    
     ready: function() {
         this.sendMessage('READY', {name: this.name});
     },

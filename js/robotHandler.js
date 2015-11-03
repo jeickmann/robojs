@@ -66,6 +66,11 @@ RobotHandler = function(duel, robotFile) {
             radarRotationLeft: 0
         };
         this.collisions = [];
+        this.adjustGunForRobotTurn = false;
+        this.adjustRadarForGunTurn = false;
+    
+        this.drawPrimitives = [];
+        this.lastTurnsDrawPrimitives = [];
 };
 
 RobotHandler.prototype = {
@@ -112,28 +117,40 @@ RobotHandler.prototype = {
         }
         
         this.oldRadarAngle = this.data.radarAngle;
-        //rotation of the radar
-        if(this.data.radarRotationLeft) {
-            var radarRotation = Math.min(CONSTANTS.rotateRadarSpeed, Math.abs(this.data.radarRotationLeft)) *  Math.sign(this.data.radarRotationLeft);
-            this.data.radarRotationLeft -= radarRotation;
-            this.data.radarAngle += radarRotation;            
+        
+        //rotation of the robot
+        if(this.data.rotationLeft) {
+            var rotation = Math.min(degrees2radions(10 - 0.75 * Math.abs(this.velocity)), Math.abs(this.data.rotationLeft)) *  Math.sign(this.data.rotationLeft);
+            this.data.rotationLeft -= rotation;
+            this.data.angle += rotation;
+            this.data.gunAngle += rotation;
+            
+            this.data.radarAngle += rotation;
+            
+            if(this.adjustGunForRobotTurn) {
+                this.data.gunRotationLeft -= rotation;
+                this.data.radarRotationLeft -= rotation;
+            }
         }
+        
+        
         
         //rotation of the gun
         if(this.data.gunRotationLeft) {
             var gunRotation = Math.min(CONSTANTS.rotateGunSpeed, Math.abs(this.data.gunRotationLeft)) *  Math.sign(this.data.gunRotationLeft);
             this.data.gunRotationLeft -= gunRotation;
             this.data.gunAngle += gunRotation;   
-            this.data.radarAngle += gunRotation;           
+            this.data.radarAngle += gunRotation; 
+            if(this.adjustRadarForGunTurn) {
+                this.data.radarRotationLeft -= gunRotation;
+            }
         }
 
-        //rotation of the robot
-        if(this.data.rotationLeft) {
-            var rotation = Math.min(degrees2radions(10 - 0.75 * Math.abs(this.velocity)), Math.abs(this.data.rotationLeft)) *  Math.sign(this.data.rotationLeft);
-            this.data.rotationLeft -= rotation;
-            this.data.angle += rotation;
-            this.data.gunAngle += rotation;  
-            this.data.radarAngle += rotation;             
+        //rotation of the radar
+        if(this.data.radarRotationLeft) {
+            var radarRotation = Math.min(CONSTANTS.rotateRadarSpeed, Math.abs(this.data.radarRotationLeft)) *  Math.sign(this.data.radarRotationLeft);
+            this.data.radarRotationLeft -= radarRotation;
+            this.data.radarAngle += radarRotation;            
         }
         
         this.data.angle = normalizeAngle(this.data.angle);
@@ -420,7 +437,26 @@ RobotHandler.prototype = {
                 
             case 'ACK_SYNC':
                 this.synched = true;
+                this.lastTurnsDrawPrimitives = this.drawPrimitives;
+                this.drawPrimitives = [];
                 this.duel.robotSynched();
+                break;
+            
+            case 'ADJUST_GUN_FOR_ROBOT_TURN':
+                this.adjustGunForRobotTurn = data.adjust;
+                break;
+                
+            case 'ADJUST_RADAR_FOR_GUN_TURN':
+                this.adjustRadarForGunTurn = data.adjust;
+                break;
+                
+            case 'DRAW_CIRCLE':
+                this.drawPrimitives.push({type:'circle', x:data.x,y:data.y,radius:data.radius,color:data.color});
+                break;
+                
+            case 'DRAW_LINE':
+                this.drawPrimitives.push({type:'line', fromX:data.fromX,fromY:data.fromY,toX:data.toX, toY:data.toY,color:data.color});
+                break;
         }
     },
     tick: function() {
@@ -445,7 +481,6 @@ Bullet = function(robot, power) {
     this.y = robot.data.y;
     this.direction = robot.data.gunAngle;
     this.power = power;
-    
     
     this.x += Math.sin(this.direction) * CONSTANTS.gunLength;
     this.y += -Math.cos(this.direction) * CONSTANTS.gunLength;

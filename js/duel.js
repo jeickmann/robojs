@@ -30,6 +30,7 @@ var Duel = function(robot1File, robot2File, rounds, speed) {
     this.currentRound = 0;
     this.message = '';
     this.drawScans = false;
+    this.drawDebug = false;
     
     this.robots = [
         new RobotHandler(this, robot1File),
@@ -233,10 +234,7 @@ Duel.prototype.testRoundEnd = function() {
 }
 
 Duel.prototype.draw = function(time) {
-    var duel = this;
-    window.requestAnimationFrame( function(time) {
-        duel.draw(time);
-    });
+    
     
     var deltaMS = (this.lastDrawCall==0)?0:time - this.lastDrawCall;
     this.lastDrawCall = time;
@@ -326,8 +324,9 @@ Duel.prototype.draw = function(time) {
                 ctx.stroke();             
             }
             
-            ctx.restore();
             
+            
+            ctx.restore();
         }
     }, this);
     this.explosions.forEach(function(animation) {
@@ -350,6 +349,29 @@ Duel.prototype.draw = function(time) {
         ctx.fill();
     });
     
+    if(this.drawDebug) {
+        this.robots.forEach(function(robot) {
+            robot.lastTurnsDrawPrimitives.forEach(function(primitive) {
+                switch(primitive.type) {
+                    case 'circle':
+                        ctx.fillStyle= primitive.color;
+                        ctx.beginPath();
+                        ctx.arc(primitive.x, primitive.y, primitive.radius, 0, Math.PI*2);
+                        ctx.fill();
+                        break;
+                    case 'line':
+                        ctx.strokeStyle = primitive.color;
+                        ctx.beginPath();
+                        ctx.moveTo(primitive.fromX, primitive.fromY);
+                        ctx.lineTo(primitive.toX, primitive.toY);
+                        ctx.stroke();
+                        break;
+                }
+            }, this);
+        }, this);
+    }
+            
+    
     document.getElementById('message').innerHTML = this.message;
     
     
@@ -357,6 +379,11 @@ Duel.prototype.draw = function(time) {
     
     this.updateRobotStats(this.robots[0], 'r1_');
     this.updateRobotStats(this.robots[1], 'r2_');
+    
+    var duel = this;
+    window.requestAnimationFrame( function(time) {
+        duel.draw(time);
+    });
 }
 
 Duel.prototype.updateRobotStats = function(robot, prefix) {
