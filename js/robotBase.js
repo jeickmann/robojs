@@ -118,7 +118,7 @@ RobotBase = {
                 this.onHitByBullet(msg.direction, msg.power, msg.velocity);
                 break;
                 
-            case: 'ROBOT_HIT':
+            case 'ROBOT_HIT':
                 this.onHitRobot(msg.x, msg.y, msg.enemyPower, msg.enemyName);
                 break;
                 
