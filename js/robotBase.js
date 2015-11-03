@@ -22,6 +22,7 @@ RobotBase = {
     run: function() { },
     onHitWall: function() { },
     onHitByBullet: function(direction, power, velocity) { },
+    onHitRobot: function(x, y, enemyPower, enemyName) {},
     onScannedRobot: function(name, direction, distance, heading, velocity, power) {},
     onDeath: function() { },
     onWin: function() {},
@@ -115,6 +116,10 @@ RobotBase = {
                 
             case 'BULLET_HIT':
                 this.onHitByBullet(msg.direction, msg.power, msg.velocity);
+                break;
+                
+            case: 'ROBOT_HIT':
+                this.onHitRobot(msg.x, msg.y, msg.enemyPower, msg.enemyName);
                 break;
                 
             case 'SCANNED_ROBOT':

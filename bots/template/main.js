@@ -22,6 +22,9 @@ Robot.onHitWall = function() { },
 //robot was hit by a bullet
 Robot.onHitByBullet = function(direction, power, velocity) { },
     
+//we hit an enemy robot with one of our bullets
+Robot.onHitRobot: function(x, y, enemyPower, enemyName) {},
+    
 //a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
 Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {},
     

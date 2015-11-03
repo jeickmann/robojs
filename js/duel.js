@@ -190,7 +190,7 @@ Duel.prototype.bulletHitRobot = function(bullet, robot) {
     this.explosions.push(new Animation(bullet.x, bullet.y, ANIMATIONS.bulletExplosion.frames, ANIMATIONS.bulletExplosion.duration));
     
     if(bullet.robot.alive) {
-        bullet.robot.data.power += 3 * bullet.power;
+        bullet.robot.bulletHitRobot(bullet, robot);
     }
     
     robot.hitByBullet(bullet);
