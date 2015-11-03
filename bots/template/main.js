@@ -63,6 +63,12 @@ The radar can turn at 45 degrees/tick
 this.turnRadarRight(radians);
 this.turnRadarLeft(radians);
 
+if you want the system to automatically correct for movement of the radar resulting from movement of the gun (the radar is mounted on the gun) or to correct for movement of the gun from movement of the robot call
+
+this.setAdjustGunForRobotTurn(true);
+this.setAdjustRadarForGunTurn(true);
+respectivly
+
 Move the robot forward or backward
 Max. acceleration is 1px/turn/turn
 Max. deceleration is 1px/turn/turn (will soon be changed to 2px/turn/turn
@@ -97,4 +103,9 @@ this.arenaWidth, this.arenaHeight
 
 Also have a look at utils.js for a set of utility functions for geometric calculations
 
+
+DEBUG-DRAWINGS:
+(have to be enabled with drawDebug=1 in the URL)
+this.drawCircle(x,y,radius,color); //color is a css style info, e.g. #ff0000
+this.drawLine((fromX, fromY, toX, toY, color);
 */
