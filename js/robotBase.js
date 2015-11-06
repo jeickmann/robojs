@@ -104,7 +104,6 @@ RobotBase.prototype = {
     ready: function() {
         this.sendMessage('READY', {name: this.name});
     },
-    
     checkCallRun: function() {
         if(this.distanceLeft == 0 && 
                   this.rotationLeft == 0 &&

@@ -17,7 +17,8 @@ Robot.prototype.startRound = function() {
 };
 
 //called every game tick
-Robot.prototype.run = function() { 
+Robot.prototype.run = function() {
+
     this.moveForward(100, function() {
             this.turnRight(Math.PI/2);
         });

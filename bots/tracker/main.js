@@ -22,7 +22,7 @@ FIRE_DISTANCE = 150;
 //called at the start of each round
 Tracker.prototype.startRound = function() {
     this.state = SCANNING;
-},
+};
     
 //called every game tick
 Tracker.prototype.run = function() { 
@@ -42,7 +42,7 @@ Tracker.prototype.run = function() {
             }
             break;
     }
-},
+};
         
 //a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
 Tracker.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
@@ -61,7 +61,8 @@ Tracker.prototype.onScannedRobot = function(name, direction, distance, heading, 
             this.state = TURNING;
         }
     }
-},
-    
+};
+
+robot = new Tracker();
 //declare everything loaded, after all robots have reported in, the first round starts
-Robot.ready();
+robot.ready();
