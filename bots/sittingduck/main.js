@@ -3,20 +3,25 @@ importScripts('../../js/utils.js');
 
 var started = false;
 
-Robot = RobotBase;
+SittingDuck = function() {
+    RobotBase.call(this);
+    this.name = 'Sitting Duck';
+}
 
-Robot.name = 'Sitting Duck';
+SittingDuck.prototype = Object.create(RobotBase.prototype);
+SittingDuck.prototype.constructor = SittingDuck;
 
-Robot.run = function() {
+SittingDuck.prototype.run = function() {
     
 };
  
-Robot.startRound = function() {
+SittingDuck.prototype.startRound = function() {
     started = false;
 }
 
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+SittingDuck.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
     
 }
 
-Robot.ready();
+robot = new SittingDuck();
+robot.ready();
