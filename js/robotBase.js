@@ -106,9 +106,7 @@ RobotBase.prototype = {
     },
     
     checkCallRun: function() {
-        if(!this.callOnlyOnIdle) {
-            this.run();
-        } else if(this.distanceLeft == 0 && 
+        if(this.distanceLeft == 0 && 
                   this.rotationLeft == 0 &&
                   this.gunRotationLeft == 0 &&
                   this.radarRotationLeft == 0) {
@@ -116,11 +114,15 @@ RobotBase.prototype = {
                 var func = this.followUp;
                 this.followUp = null;
                 func.call(this);
-                //check again, maybe the followup didn't queue anything
-                this.checkCallRun();
-            } else {
-                this.run();
             }
+        }
+        if(!this.callOnlyOnIdle) {
+            this.run();
+        } else if(this.distanceLeft == 0 && 
+                  this.rotationLeft == 0 &&
+                  this.gunRotationLeft == 0 &&
+                  this.radarRotationLeft == 0) {
+            this.run();
         }
     },
     queueFollowUp: function(onFinished) {
