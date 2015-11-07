@@ -24,4 +24,13 @@ var bot2File = (bot2.startsWith('/')?'':'bots/') + bot2 + '/main.js';
 duel = new Duel(bot1File, bot2File, rounds, speed);
 duel.drawScans = getUrlParam('drawScans') != null;
 duel.drawDebug = getUrlParam('drawDebug') != null;
+
+duel.onFinished = function(bot1name, bot1score,bot2name,bot2score) {
+    if(getUrlParam('redirecturl')) {
+        var url = getUrlParam('redirecturl') + '?bot1='+bot1+'&bot2='+bot2+'&score1='+bot1score+'&score2='+bot2score;
+        
+        window.location.href = url;
+    }
+}
+
 duel.start();

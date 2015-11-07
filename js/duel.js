@@ -184,6 +184,10 @@ Duel.prototype.bulletHitWall = function(bullet) {
     this.explosions.push(new Animation(bullet.x, bullet.y, ANIMATIONS.bulletExplosion.frames, ANIMATIONS.bulletExplosion.duration));
     var index = this.bullets.indexOf(bullet);
     this.bullets.splice(index, 1);
+    
+    if(bullet.robot.alive) {
+        bullet.robot.bulletHitWall(bullet);
+    }
 }
 
 Duel.prototype.bulletHitRobot = function(bullet, robot) {
@@ -229,6 +233,12 @@ Duel.prototype.testRoundEnd = function() {
             }, 1000);
         } else {
             this.message += ' <br>Final Score: ' + this.robots[0].wins + ":" + this.robots[1].wins;
+            var duel = this;
+            setTimeout(function() {
+                if(duel.onFinished) {
+                    duel.onFinished(duel.robots[0].name, duel.robots[0].wins, duel.robots[1].name, duel.robots[1].wins);   
+                }
+            }, 2000);
         }
     }
 }

@@ -362,11 +362,19 @@ RobotHandler.prototype = {
     bulletHitRobot: function(bullet, robot) {
         this.data.power += 3 * bullet.power;
         var message = {
-            _cmd: 'ROBOT_HIT',
+            _cmd: 'BULLET_HIT_ROBOT',
             x: bullet.x,
             y: bullet.y,
             enemyPower: robot.data.power,
             enemyName: robot.name
+        }
+        this.sendMessageToBot(message);
+    },
+    bulletHitWall: function(bullet, robot) {
+        var message = {
+            _cmd: 'BULLET_HIT_WALL',
+            x: bullet.x,
+            y: bullet.y
         }
         this.sendMessageToBot(message);
     },
