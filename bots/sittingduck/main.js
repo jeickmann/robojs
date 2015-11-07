@@ -1,22 +1,14 @@
 importScripts('../../js/robotBase.js');
 importScripts('../../js/utils.js');
 
-var started = false;
-
-Robot = RobotBase;
-
-Robot.name = 'Sitting Duck';
-
-Robot.run = function() {
-    
-};
- 
-Robot.startRound = function() {
-    started = false;
+SittingDuck = function() {
+    RobotBase.call(this);
+    this.name = 'Sitting Duck';
 }
 
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
-    
-}
+SittingDuck.prototype = Object.create(RobotBase.prototype);
+SittingDuck.prototype.constructor = SittingDuck;
 
-Robot.ready();
+
+robot = new SittingDuck();
+robot.ready();

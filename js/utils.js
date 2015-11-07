@@ -124,7 +124,7 @@ function isNear(value, value2) {
         
 
 function getUrlParam(parameterName) {
-    var queryString = window.top.location.search.substring(1);
+    var queryString = window.location.search.substring(1);
   var parameterName = parameterName + "=";
   if ( queryString.length > 0 ) {
     begin = queryString.indexOf ( parameterName );

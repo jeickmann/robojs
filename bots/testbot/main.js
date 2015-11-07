@@ -1,11 +1,15 @@
 importScripts('../../js/robotBase.js');
 importScripts('../../js/utils.js');
 
-Robot = RobotBase;
+Testbot = function() {
+    RobotBase.call(this);
+    this.name = 'Testbot I';
+}
 
-Robot.name = 'Testbot I';
+Testbot.prototype = Object.create(RobotBase.prototype);
+Testbot.prototype.constructor = Testbot;
 
-Robot.run = function() {
+Testbot.prototype.run = function() {
     //keep it spinning
     
         this.turnRadarRight(1000);   
@@ -13,14 +17,14 @@ Robot.run = function() {
     //this.fire(3);
 };
 
- Robot.onHitWall = function() {
+ Testbot.prototype.onHitWall = function() {
     console.log('OUCH');
     dir *-1;
     this.moveForward(520 * dir);
     this.turnRight(Math.PI);
 }
  
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+Testbot.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
     /*
     this.enemyDetected = true;
     //turn radar fully towards enemy
@@ -35,11 +39,13 @@ Robot.onScannedRobot = function(name, direction, distance, heading, velocity, po
     }
 }
  
-Robot.startRound = function() {
+Testbot.prototype.startRound = function() {
     console.log('NEW ROUND');
     started = false;
     dir = 1;
     this.enemyDetected = false;
 }
 
-Robot.ready();
+var robot = new Testbot();
+//declare everything loaded, after all robots have reported in, the first round starts
+robot.ready();

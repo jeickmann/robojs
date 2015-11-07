@@ -3,21 +3,26 @@ importScripts('../../js/utils.js');
 
 var started = false;
 
-Robot = RobotBase;
+Spinbot = function() {
+    RobotBase.call(this);
+    this.name = 'SpinBot';
+}
 
-Robot.name = 'SpinBot';
+Spinbot.prototype = Object.create(RobotBase.prototype);
+Spinbot.prototype.constructor = Spinbot;
 
-Robot.run = function() {
+Spinbot.prototype.run = function() {
     this.turnRight(10);
     this.moveForward(25);
 };
  
-Robot.startRound = function() {
+Spinbot.prototype.startRound = function() {
     started = false;
 }
 
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+Spinbot.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
     this.fire(3);
 }
 
-Robot.ready();
+robot = new Spinbot();
+robot.ready();

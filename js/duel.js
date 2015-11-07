@@ -31,6 +31,7 @@ var Duel = function(robot1File, robot2File, rounds, speed) {
     this.message = '';
     this.drawScans = false;
     this.drawDebug = false;
+    this.onfinished = null;
     
     this.robots = [
         new RobotHandler(this, robot1File),
@@ -233,12 +234,12 @@ Duel.prototype.testRoundEnd = function() {
             }, 1000);
         } else {
             this.message += ' <br>Final Score: ' + this.robots[0].wins + ":" + this.robots[1].wins;
-            var duel = this;
-            setTimeout(function() {
-                if(duel.onFinished) {
-                    duel.onFinished(duel.robots[0].name, duel.robots[0].wins, duel.robots[1].name, duel.robots[1].wins);   
-                }
-            }, 2000);
+
+            if(this.onfinished) {
+                setTimeout(function() {
+                    duel.onfinished(duel.robots[0].wins, duel.robots[1].wins);
+                }, 2000);
+            }
         }
     }
 }

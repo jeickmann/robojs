@@ -3,22 +3,29 @@ importScripts('../../js/utils.js');
 
 var started = false;
 
-Robot = RobotBase;
+Testbot2 = function() {
+    RobotBase.call(this);
+    this.name = 'Testbot II';
+}
 
-Robot.name = 'Testbot II';
+Testbot2.prototype = Object.create(RobotBase.prototype);
+Testbot2.prototype.constructor = Testbot2;
 
-Robot.run = function() {
+Testbot2.prototype.run = function() {
     this.moveForward(200);
     this.turnRight(10);
     
 };
  
-Robot.startRound = function() {
+Testbot2.prototype.startRound = function() {
     started = false;
 }
 
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+Testbot2.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
     
 }
 
-Robot.ready();
+
+var robot = new Testbot2();
+//declare everything loaded, after all robots have reported in, the first round starts
+robot.ready();

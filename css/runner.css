@@ -1,0 +1,12 @@
+iframe {
+    float: left;
+    margin-right: 20px;
+}
+
+ul.highscores {
+    list-style: none;
+}
+
+ul.highscores li.active {
+    font-weight: bold;
+}

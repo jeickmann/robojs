@@ -1,71 +1,85 @@
-addEventListener('message', function(e) {
-  var data = e.data;
-  Robot.receiveMessage(data);
-  
-});
-
-RobotBase = {
-    x:0,
-    y:0,
-    distanceLeft:0,
-    angle:0,
-    rotationLeft:0,
-    gunAngle:0,
-    gunRotationLeft:0,
-    radarAngle:0,
-    radarRotationLeft:0,
-    arenaWidth: 0,
-    arenaHeight: 0,
-    tickCount: 0,
+RobotBase = function() {
+    this.x=0;           
+    this.y=0;
+    this.distanceLeft=0;
+    this.angle=0;
+    this.rotationLeft=0;
+    this.gunAngle=0;
+    this.gunRotationLeft=0;
+    this.radarAngle=0;
+    this.radarRotationLeft=0;
+    this.arenaWidth=0;
+    this.arenaHeight=0;
+    this.tickCount=0;
+    this.callOnlyOnIdle = false;
+    this.followUp = null;
     
+    var robot = this;
+    
+    addEventListener('message', function(e) {
+      var data = e.data;
+      robot.receiveMessage(data);
+    });
+}
+
+RobotBase.prototype = {
     startRound: function() { },
     run: function() { },
+    draw: function() { },
     onHitWall: function() { },
     onHitByBullet: function(direction, power, velocity) { },
     onBulletHitRobot: function(x, y, enemyPower, enemyName) {},
     onBulletHitWall: function(x, y) {},
     onScannedRobot: function(name, direction, distance, heading, velocity, power) {},
     onDeath: function() { },
-    onWin: function() {},
+    onWin: function() { },
     
-    turnRight: function(radians) {
+    turnRight: function(radians, onFinished) {
         this.sendMessage('TURN', {angle: radians});
         this.rotationLeft = radians;
+        this.queueFollowUp(onFinished);
     },
     
-    turnLeft: function(radians) {
+    turnLeft: function(radians, onFinished) {
         this.sendMessage('TURN', {angle: -radians});
         this.rotationLeft = -radians;
+        this.queueFollowUp(onFinished);
     },
     
-    turnGunRight: function(radians) {
+    turnGunRight: function(radians, onFinished) {
         this.sendMessage('TURN_GUN', {angle: radians});
         this.gunRotationLeft = radians;
+        this.queueFollowUp(onFinished);
     },
     
-    turnGunLeft: function(radians) {
+    turnGunLeft: function(radians, onFinished) {
         this.sendMessage('TURN_GUN', {angle: -radians});
         this.gunRotationLeft = -radians;
+        this.queueFollowUp(onFinished);
     },
     
-    turnRadarRight: function(radians) {
+    turnRadarRight: function(radians, onFinished) {
         this.sendMessage('TURN_RADAR', {angle: radians});
         this.radarRotationLeft = radians;
+        this.queueFollowUp(onFinished);
     },
     
-    turnRadarLeft: function(radians) {
+    turnRadarLeft: function(radians, onFinished) {
         this.sendMessage('TURN_RADAR', {angle: -radians});
         this.radarRotationLeft = -radians;
+        this.queueFollowUp(onFinished);
     },
     
-    moveForward: function(distance) {
+    moveForward: function(distance, onFinished) {
         this.sendMessage('MOVE', {distance: distance});
         this.distanceLeft = distance;
+        this.queueFollowUp(onFinished);
     },
     
-    moveBack: function(distance) {
+    moveBack: function(distance, onFinished) {
         this.sendMessage('MOVE', {distance: -distance});
         this.distanceLeft = -distance;
+        this.queueFollowUp(onFinished);
     },
     
     fire: function(firingPower) {
@@ -91,7 +105,31 @@ RobotBase = {
     ready: function() {
         this.sendMessage('READY', {name: this.name});
     },
-    
+    checkCallRun: function() {
+        if(this.distanceLeft == 0 && 
+                  this.rotationLeft == 0 &&
+                  this.gunRotationLeft == 0 &&
+                  this.radarRotationLeft == 0) {
+            if(this.followUp) {
+                var func = this.followUp;
+                this.followUp = null;
+                func.call(this);
+            }
+        }
+        if(!this.callOnlyOnIdle) {
+            this.run();
+        } else if(this.distanceLeft == 0 && 
+                  this.rotationLeft == 0 &&
+                  this.gunRotationLeft == 0 &&
+                  this.radarRotationLeft == 0) {
+            this.run();
+        }
+    },
+    queueFollowUp: function(onFinished) {
+        if(onFinished) {
+            this.followUp = onFinished;
+        }
+    },    
     receiveMessage: function(msg) {
         if(msg.updateInfo != null) {
             this.power = msg.updateInfo.power;
@@ -103,11 +141,12 @@ RobotBase = {
             this.distanceLeft = msg.updateInfo.distanceLeft;
             this.rotationLeft = msg.updateInfo.rotationLeft;
             this.gunRotationLeft = msg.updateInfo.gunRotationLeft;
-            this.radarRotationLeft = msg.updateInforadarRotationLeft;
+            this.radarRotationLeft = msg.updateInfo.radarRotationLeft;
         }
         switch(msg._cmd) {            
             case 'TICK':
-                this.run();
+                this.checkCallRun();
+                this.draw();
                 this.tickCount++;
                 break;
                 
@@ -161,4 +200,3 @@ RobotBase = {
         postMessage(params);
     }
 }
-

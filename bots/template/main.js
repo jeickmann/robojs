@@ -1,41 +1,45 @@
 importScripts('../../js/robotBase.js');
 importScripts('../../js/utils.js');
 
-Robot = RobotBase;
+MyRobot = function() {
+    RobotBase.call(this);
+    this.name = '---TEMPLATE PLEASE RENAME---';
+}
 
-Robot.name = '---TEMPLATE PLEASE RENAME---';
+MyRobot.prototype.prototype = Object.create(RobotBase.prototype);
+MyRobot.prototype.prototype.constructor = MyRobot;
 
-
-Robot.run = function() {
+MyRobot.prototype.run = function() {
     
 };
 
 //called at the start of each round
-Robot.startRound = function() { },
+MyRobot.prototype.startRound = function() { },
     
 //called every game tick
-Robot.run = function() { },
+MyRobot.prototype.run = function() { },
     
 //robot hits a wall
-Robot.onHitWall = function() { },
+MyRobot.prototype.onHitWall = function() { },
     
 //robot was hit by a bullet
-Robot.onHitByBullet = function(direction, power, velocity) { },
+MyRobot.prototype.onHitByBullet = function(direction, power, velocity) { },
     
 //we hit an enemy robot with one of our bullets
-Robot.onHitRobot: function(x, y, enemyPower, enemyName) {},
+MyRobot.prototype.onHitMyRobot: function(x, y, enemyPower, enemyName) {},
     
 //a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {},
+MyRobot.prototype.onScannedMyRobot = function(name, direction, distance, heading, velocity, power) {},
     
 //this robot died
-Robot.onDeath = function() { },
+MyRobot.prototype.onDeath = function() { },
     
 //robot wins
-Robot.onWin = function() {},
+MyRobot.prototype.onWin = function() {},
 
-//declare everything loaded, after all robots have reported in, the first round starts
-Robot.ready();
+//create an instance and declare everything loaded, after all robots have reported in, the first round starts
+robot = new MyRobot();
+robot.ready();
 
 /*
 POSSIBLE ACTIONS:

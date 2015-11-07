@@ -1,14 +1,14 @@
 importScripts('../../js/robotBase.js');
 importScripts('../../js/utils.js');
 
-Robot = RobotBase;
+Robot = function() {
+    RobotBase.call(this);
+    this.name = 'Walls';
+}
 
-Robot.name = 'Walls';
+Robot.prototype = Object.create(RobotBase.prototype);
+Robot.prototype.constructor = Robot;
 
-
-Robot.run = function() {
-    
-};
 
 STATE_MOVING_EAST = 0;
 STATE_MOVING_SOUTH = 1;
@@ -18,15 +18,14 @@ STATE_MOVING_NORTH = 3;
 WALL_DISTANCE = 50;
 
 //called at the start of each round
-Robot.startRound = function() {
+Robot.prototype.startRound = function() {
     this.state = STATE_MOVING_NORTH;
     this.enemyDetected = -100;
     this.turnGunRight(Math.PI/2);
-},
+};
 
 //called every game tick
-Robot.run = function() { 
-
+Robot.prototype.run = function() { 
     if(Math.abs(this.rotationLeft) < 0.01) {
         switch(this.state) {
             case STATE_MOVING_NORTH:
@@ -72,25 +71,14 @@ Robot.run = function() {
                 break;
         }
     }
-},
+};
     
-//robot hits a wall
-Robot.onHitWall = function() { 
-},
-    
-//robot was hit by a bullet
-Robot.onHitByBullet = function(direction, power, velocity) { },
-    
-//a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
-Robot.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
-    this.fire(3);
-},
-    
-//this robot died
-Robot.onDeath = function() { },
-    
-//robot wins
-Robot.onWin = function() {},
 
+//a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
+Robot.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {
+    this.fire(3);
+};
+    
+var robot = new Robot();
 //declare everything loaded, after all robots have reported in, the first round starts
-Robot.ready();
+robot.ready();
