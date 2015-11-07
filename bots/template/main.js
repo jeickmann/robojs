@@ -23,13 +23,16 @@ MyRobot.prototype.run = function() { },
 MyRobot.prototype.onHitWall = function() { },
     
 //robot was hit by a bullet
-MyRobot.prototype.onHitByBullet = function(direction, power, velocity) { },
+MyRobot.prototype.onHitByBullet = function(direction, power, velocity) { };
     
 //we hit an enemy robot with one of our bullets
-MyRobot.prototype.onHitMyRobot: function(x, y, enemyPower, enemyName) {},
-    
+MyRobot.prototype.onBulletHitRobot = function(x, y, enemyPower, enemyName) {};
+
+//one of our bullets missed and hit a wall
+MyRobot.prototype.onBulletHitWall = function(x, y) {};
+        
 //a robot was scanned, robots are only scanned when the radar sweeps over the enemy robot during the tick
-MyRobot.prototype.onScannedMyRobot = function(name, direction, distance, heading, velocity, power) {},
+MyRobot.prototype.onScannedRobot = function(name, direction, distance, heading, velocity, power) {},
     
 //this robot died
 MyRobot.prototype.onDeath = function() { },
