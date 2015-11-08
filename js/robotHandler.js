@@ -14,7 +14,8 @@ CONSTANTS = {
     radarOffsetY: 8,
     gunCoolingRate: 0.1,
     maxFiringPower: 3,
-    initialPower: 100
+    initialPower: 100,
+    IDLE_POWER_LOSS: 0.5
 };
 
 ROBOT_DEFAULTS = {
@@ -26,7 +27,9 @@ ROBOT_DEFAULTS = {
     velocity: 0,
     rotateGunRadians: 0,
     rotateRadarRadians: 0,
-    alive: true
+    lastActionOnTick: 0,
+    alive: true,
+    idleTimeoutReached: false
 }
 
 ROBOT_DATA_DEFAULTS = {
@@ -51,7 +54,9 @@ RobotHandler = function(duel, robotFile) {
         this.rotateRadarRadians = 0;
         this._boundingBox = new Rect(0,0,CONSTANTS.robotWidth, CONSTANTS.robotHeight);
         this.alive = true;
+        this.idleTimeoutReached = false;
         this.wins = 0;
+        this.lastActionOnTick = 0;
         this.data = {
             power: CONSTANTS.initialPower,
             gunHeat: 0,
@@ -131,6 +136,8 @@ RobotHandler.prototype = {
                 this.data.gunRotationLeft -= rotation;
                 this.data.radarRotationLeft -= rotation;
             }
+            
+            this.idleTimeoutReached = false;
         }
         
         
@@ -144,13 +151,17 @@ RobotHandler.prototype = {
             if(this.adjustRadarForGunTurn) {
                 this.data.radarRotationLeft -= gunRotation;
             }
+            
+            this.idleTimeoutReached = false;
         }
 
         //rotation of the radar
         if(this.data.radarRotationLeft) {
             var radarRotation = Math.min(CONSTANTS.rotateRadarSpeed, Math.abs(this.data.radarRotationLeft)) *  Math.sign(this.data.radarRotationLeft);
             this.data.radarRotationLeft -= radarRotation;
-            this.data.radarAngle += radarRotation;            
+            this.data.radarAngle += radarRotation;    
+            
+            this.idleTimeoutReached = false;
         }
         
         this.data.angle = normalizeAngle(this.data.angle);
@@ -199,6 +210,8 @@ RobotHandler.prototype = {
         if(this.velocity != 0) {
             this.doMovement();
             
+            this.idleTimeoutReached = false;
+            
             var oldSign = Math.sign(this.data.distanceLeft);
             this.data.distanceLeft -= this.velocity;
             if(oldSign != Math.sign(this.data.distanceLeft)) {
@@ -218,8 +231,16 @@ RobotHandler.prototype = {
             }
         }
         
+        if(this.idleTimeoutReached) {
+            this.data.power -= CONSTANTS.IDLE_POWER_LOSS;
+        }
+        
         if(this.data.power <= 0) {
             this.die();   
+        }
+        
+        if(this.lastActionOnTick < this.duel.tickCount - this.duel.MAX_IDLE_TICKS) {
+            this.idleTimeoutReached = true;
         }
     },
     checkCollision: function(robot) {
@@ -313,11 +334,7 @@ RobotHandler.prototype = {
                 if(inFront && (cornerInside || cornerToTheFront == cornerToTheBack)) {
                     //we scanned
                     this.scannedRobot(robot);
-                }
-                
-                                
-                //console.log("From " + this.name + " to " + robot.name + "(" + deltaX + "," + deltaY + "): " + directionAngle);
-                
+                }                
             }
         }, this);
         
@@ -416,6 +433,9 @@ RobotHandler.prototype = {
             height: this.duel.height
         });
     },
+    recordAction: function() {
+        this.lastActionOnTick = this.duel.tickCount;  
+    },
     messageHandler: function(e) {
         if(!this.alive) {
             return;   
@@ -432,21 +452,25 @@ RobotHandler.prototype = {
 
             case 'MOVE':
                 this.data.distanceLeft = data.distance;
+                this.recordAction();
                 //console.log(robot"Trying to move " + data.distance);
                 break;
 
             case 'TURN':
                 this.data.rotationLeft = data.angle;
+                this.recordAction();
                 //console.log("Trying to rotate " + data.angle);
                 break;
 
             case 'TURN_GUN':
                 this.data.gunRotationLeft = data.angle;
+                this.recordAction();
                 //console.log("Trying to rotate gun " + data.angle);
                 break;
                 
             case 'TURN_RADAR':
                 this.data.radarRotationLeft = data.angle;
+                this.recordAction();
                 //console.log("Trying to rotate radar " + data.angle);
                 break;
                 

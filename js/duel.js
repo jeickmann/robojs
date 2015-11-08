@@ -27,7 +27,9 @@ var Duel = function(robot1File, robot2File, rounds, speed) {
     this.boundingBox = new Rect(0,0,this.width, this.height);
     this.ticksPerSecond = speed;
     this.rounds = rounds;
+    this.MAX_IDLE_TICKS = 600; //is 30 seconds on "normal" speed
     this.currentRound = 0;
+    this.tickCount = 0;
     this.message = '';
     this.drawScans = false;
     this.drawDebug = false;
@@ -97,6 +99,7 @@ Duel.prototype.startRound = function() {
     this.explosions = [];
     this.bullets = [];
     this.currentRound++;
+    this.tickCount = 0;
     this.message = 'Round ' + this.currentRound;
     var duel = this;
     setTimeout(function() {
@@ -147,6 +150,7 @@ Duel.prototype.updateBulletsAndTick = function() {
         bullet.advance();
     });
     
+    this.tickCount++;
     this.robots.forEach(function(robot) {
         robot.tick();
     });

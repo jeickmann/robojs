@@ -9,6 +9,11 @@ SittingDuck = function() {
 SittingDuck.prototype = Object.create(RobotBase.prototype);
 SittingDuck.prototype.constructor = SittingDuck;
 
+SittingDuck.prototype.run = function() {
+    if(this.tickCount > 200) {
+        this.moveForward(100);
+    }
+}
 
 robot = new SittingDuck();
 robot.ready();
